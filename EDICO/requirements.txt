@@ -1,4 +1,0 @@
-pydicom
-numpy
-gooey
-
