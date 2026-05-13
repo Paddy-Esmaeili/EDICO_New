@@ -2,7 +2,7 @@ name: Build Executables
 
 on:
   push:
-    branches: [ EDICO ]
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
