@@ -1,0 +1,66 @@
+name: Build Executables
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pyinstaller pyinstaller-hooks-contrib
+
+      - name: Build Windows executable
+        run: |
+          python -m PyInstaller --onefile --windowed --name Edico main.py
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Edico-Windows
+          path: dist/Edico.exe
+
+  build-mac:
+    runs-on: macos-15-intel
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pyinstaller pyinstaller-hooks-contrib
+
+      - name: Build Mac app bundle
+        run: |
+          python3 -m PyInstaller --windowed --name "Edico" --osx-bundle-identifier com.edico.app main.py
+
+      - name: Sign the app (ad-hoc)
+        run: |
+          codesign --force --deep --sign - dist/Edico.app
+
+      - name: Zip the .app bundle
+        run: |
+          cd dist
+          zip -r --symlinks Edico-Mac.zip "Edico.app"
+
+      - name: Upload Mac artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Edico-Mac
+          path: dist/Edico-Mac.zip
