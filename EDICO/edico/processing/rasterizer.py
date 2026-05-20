@@ -2,14 +2,6 @@
 rasterizer.py
 Converts one 2D slice (a sparse set of x, y, voltage points) into a
 dense pixel grid suitable for DICOM export.
-
-For each pixel cell:
-    - If no points fall in the cell          → -1000  ("air")
-    - If all points are unmapped (-500)      → -500   ("unmapped region")
-    - If valid (positive) points exist       → mean of positive voltages
-    - If only negative non-(-500) values     → -500   (treated as unmapped)
-
-The output is a 2D int16 array matching the DICOM pixel representation.
 """
 
 import numpy as np
@@ -27,33 +19,6 @@ def rasterize_slice(
     """
     Convert one slice's point cloud into a 2D pixel grid.
 
-    Parameters
-    ----------
-    slice_data_row : np.ndarray, shape (N, 3)
-        x, y, z coordinates of all points for this slice.
-        Points not belonging to this slice have all-zero coordinates.
-    color_data_row : np.ndarray, shape (N,)
-        Voltage values for each point (-500 = unmapped, 0 = not in slice).
-    figure_height : int
-        Number of pixel rows in the output image.
-    figure_width : int
-        Number of pixel columns in the output image.
-    min_x : float
-        Physical x-coordinate of the left edge of the grid.
-    min_y : float
-        Physical y-coordinate of the bottom edge of the grid.
-    pixel_size : float
-        Size of each pixel in mm.
-
-    Returns
-    -------
-    z_int16 : np.ndarray, shape (figure_height, figure_width), dtype int16
-        Rasterized pixel values.
-    voxel_stats : dict
-        Diagnostic statistics for this slice:
-            'values'    : list of mean voltages for mapped voxels
-            'n_points'  : list of point counts per mapped voxel
-            'coeff_var' : list of coefficient of variation per mapped voxel
     """
     X = slice_data_row[:, 0]
     Y = slice_data_row[:, 1]
