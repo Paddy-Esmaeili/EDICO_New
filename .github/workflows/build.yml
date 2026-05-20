@@ -23,7 +23,7 @@ jobs:
 
       - name: Build Windows executable
         run: |
-          python -m PyInstaller --onefile --windowed --name Edico EDICO/main.py
+          python -m PyInstaller --onefile --windowed --hidden-import=six --collect-all gooey --name Edico EDICO/main.py
 
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
@@ -48,7 +48,7 @@ jobs:
 
       - name: Build Mac app bundle
         run: |
-          python3 -m PyInstaller --windowed --name "Edico" --osx-bundle-identifier com.edico.app EDICO/main.py
+          python3 -m PyInstaller --windowed --hidden-import=six --collect-all gooey --name "Edico" --osx-bundle-identifier com.edico.app EDICO/main.py
 
       - name: Sign the app (ad-hoc)
         run: |
