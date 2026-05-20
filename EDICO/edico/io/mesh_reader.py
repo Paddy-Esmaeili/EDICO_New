@@ -2,15 +2,6 @@
 mesh_reader.py
 Reads the .mesh file exported by the electroanatomic mapping system (e.g. CARTO).
 
-The file format has:
-  - 8 header lines (currently unused but preserved for future use)
-  - n_vertex / n_triangle counts
-  - Three data blocks separated by blank/comment lines:
-      1. Vertex coordinates  (x, y, z, ...)
-      2. Triangle indices    (i, j, k, ...)
-      3. Color/voltage data  (unipolar, bipolar, ...)
-
-Each data row is prefixed with its 0-based index, e.g.:  0 = 1.23 4.56 7.89
 """
 
 import numpy as np
@@ -20,31 +11,6 @@ def parse_mesh(filepath: str):
     """
     Parse a .mesh file.
 
-    Parameters
-    ----------
-    filepath : str
-        Path to the .mesh file.
-
-    Returns
-    -------
-    vertices : np.ndarray, shape (N, 3)
-        x, y, z coordinates of each vertex in the original coordinate system.
-    triangles : np.ndarray, shape (M, 3)
-        Triangle connectivity as vertex indices.
-        NOTE: These are read but not currently used in the pipeline.
-              Preserved for future surface-fill implementations.
-    color_data : np.ndarray, shape (N, K)
-        Per-vertex scalar values.
-        Column 0 = unipolar voltage
-        Column 1 = bipolar voltage
-        Additional columns may exist; their meaning is undocumented.
-
-    Raises
-    ------
-    FileNotFoundError
-        If the file does not exist.
-    ValueError
-        If the file is malformed or cannot be parsed.
     """
     with open(filepath, 'r') as fid:
         # Read and preserve the 8-line header for future reference.

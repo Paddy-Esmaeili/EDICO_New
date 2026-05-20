@@ -2,8 +2,7 @@
 validation/inputs.py
 Validates user inputs before the pipeline starts processing.
 
-These checks run up front so the user gets a clear error message
-immediately rather than a cryptic crash mid-way through a long run.
+These checks run up front so the user gets a clear error message.
 """
 
 import os

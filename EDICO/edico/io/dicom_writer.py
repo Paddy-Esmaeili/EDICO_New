@@ -1,27 +1,6 @@
 """
 dicom_writer.py
 Creates individual DICOM CT slice files from 2D pixel arrays.
-
-Each slice is written as a CT-modality DICOM with voltage values
-encoded as Hounsfield-Unit-scaled int16 pixel data, so that
-treatment planning systems can load the electroanatomic map
-as if it were a CT volume.
-
-Pixel value conventions (carried over from original implementation):
-    > 0       : mapped region, value = mean bipolar voltage × 1000
-    -500      : unmapped region (catheter did not reach within fill_threshold)
-    -1000     : empty space / "air"
-
-OPEN QUESTIONS:
-  - Several required DICOM tags are intentionally left blank (StudyDate,
-    KVP, SeriesNumber, etc.) for compatibility with the original pipeline.
-    Some treatment planning systems may reject files missing these tags.
-  - The SOP Instance UID format  "<index+1>.<shared_uid_stem>"  is
-    non-standard. Standard UIDs should be globally unique without
-    positional prefixes.
-  - ImageOrientationPatient is set to [0,1,0,1,0,0] with a comment
-    "testing this -- might not be needed". This should be validated
-    against the treatment planning system's expectations.
 """
 
 import os

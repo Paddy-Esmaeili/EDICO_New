@@ -11,8 +11,6 @@ def prepare_directory(path: str):
     """
     Create a directory at `path`, or clear it if it already exists.
 
-    WARNING: This permanently deletes all contents of the directory.
-    The user is warned about this in the GUI before running.
     """
     if os.path.exists(path):
         for filename in os.listdir(path):

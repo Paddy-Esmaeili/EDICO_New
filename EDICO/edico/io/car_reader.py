@@ -1,16 +1,6 @@
 """
 car_reader.py
 Reads the _car file exported by the electroanatomic mapping system.
-
-The file contains catheter position records. Lines beginning with 'P'
-are contact point records. Columns 4-6 (0-indexed) hold x, y, z coordinates.
-
-OPEN QUESTIONS (to verify with clinical team):
-  - What do columns 0-3 and 7+ contain? (possibly: point index, timestamp,
-    contact quality, impedance, catheter orientation)
-  - Are all 'P' lines confirmed contact points, or do they include
-    non-contact catheter positions?
-  - Is the coordinate system guaranteed to match the .mesh file?
 """
 
 import numpy as np
@@ -20,23 +10,6 @@ def parse_car(filepath: str) -> np.ndarray:
     """
     Parse a _car file and return catheter contact point coordinates.
 
-    Parameters
-    ----------
-    filepath : str
-        Path to the _car file.
-
-    Returns
-    -------
-    car_array : np.ndarray, shape (N, 3)
-        x, y, z coordinates of catheter contact points
-        in the original (pre-rotation) coordinate system.
-
-    Raises
-    ------
-    FileNotFoundError
-        If the file does not exist.
-    ValueError
-        If no 'P' lines are found or the file cannot be parsed.
     """
     car_values = []
 

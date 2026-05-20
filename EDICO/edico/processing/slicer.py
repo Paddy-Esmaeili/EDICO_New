@@ -4,23 +4,7 @@ Divides the 3D mesh point cloud into horizontal z-axis slabs (slices),
 assigns each point to its slice, and determines whether each point
 is "mapped" or "unmapped" based on proximity to catheter contact points.
 
-Mapped vs unmapped logic:
-    A mesh vertex is considered "mapped" if:
-        1. It is within fill_threshold mm of at least one catheter contact point, AND
-        2. Its voltage value is > 0
 
-    If either condition fails, the point is labelled unmapped and assigned
-    a sentinel value of -500.
-
-OPEN QUESTIONS:
-    - Should voltage == 0 be treated as unmapped (current behaviour) or as
-      valid scar data? Near-zero bipolar voltage is clinically significant
-      (indicates dense scar tissue). This is a patient-safety question that
-      must be confirmed with the clinical team.
-    - Is fill_threshold=11mm clinically validated? The left ventricle is
-      ~50mm across, so 11mm is a large radius.
-    - Are voltage values in Volts (requiring ×1000 to get mV) or already
-      in mV? The ×1000 multiplication is unverified.
 """
 
 import numpy as np
@@ -48,18 +32,6 @@ def compute_geometry(vertices: np.ndarray, pixel_size: float, slice_thickness: f
     """
     Compute the bounding box and grid dimensions for the volume.
 
-    Parameters
-    ----------
-    vertices : np.ndarray, shape (N, 3)
-        Rotated vertex coordinates.
-    pixel_size : float
-        In-plane pixel size in mm.
-    slice_thickness : float
-        Slice thickness in mm.
-
-    Returns
-    -------
-    VolumeGeometry
     """
     min_x = vertices[:, 0].min() - PADDING_MM
     min_y = vertices[:, 1].min() - PADDING_MM
@@ -95,29 +67,6 @@ def assign_points_to_slices(
     """
     Assign each vertex to its z-slice and determine its mapped/unmapped status.
 
-    Parameters
-    ----------
-    vertices : np.ndarray, shape (N, 3)
-        Rotated vertex coordinates.
-    voltage : np.ndarray, shape (N,)
-        Per-vertex voltage values (bipolar or unipolar).
-        OPEN QUESTION: units assumed to be Volts; multiplied by 1000 → mV.
-    x_car, y_car, z_car : np.ndarray, shape (M,)
-        Rotated catheter contact point coordinates.
-    geom : VolumeGeometry
-        Bounding box / grid info from compute_geometry().
-    slice_thickness : float
-        Slice thickness in mm.
-    fill_threshold : float
-        Maximum distance (mm) from a catheter point for a vertex to
-        be considered "mapped".
-
-    Returns
-    -------
-    slice_data : np.ndarray, shape (n_slices, N, 3)
-        x, y, z of each point per slice (0 where point not in that slice).
-    color_data : np.ndarray, shape (n_slices, N)
-        Voltage × 1000 for mapped points, -500 for unmapped.
     """
     n_points = len(vertices)
     n_slices = geom.number_of_slices
