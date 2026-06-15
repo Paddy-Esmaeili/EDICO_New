@@ -64,3 +64,4 @@ jobs:
         with:
           name: Edico-Mac
           path: dist/Edico-Mac.zip
+        
