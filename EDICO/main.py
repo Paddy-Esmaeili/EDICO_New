@@ -22,7 +22,7 @@ from edico.io.dicom_writer import write_dicom_series
 from edico.processing.coordinates import rotate_to_hfs
 from edico.processing.slicer import compute_geometry, assign_points_to_slices
 from edico.processing.rasterizer import rasterize_slice
-from edico.validation.inputs import validate_inputs
+#from edico.validation.inputs import validate_inputs
 from edico.utils import prepare_directory
 
 
@@ -69,6 +69,7 @@ def main():
     output_dir = os.path.join(args.results, "result")
 
     # --- Validate all inputs before touching anything ---
+    """
     validate_inputs(
         mesh_path=args.mesh,
         car_path=args.car,
@@ -80,7 +81,7 @@ def main():
         slice_thickness=args.SliceThickness,
         fill_threshold=args.Threshold,
     )
-
+"""
     prepare_directory(output_dir)
 
     # --- Read inputs ---

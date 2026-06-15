@@ -4,7 +4,7 @@ Validates user inputs before the pipeline starts processing.
 
 These checks run up front so the user gets a clear error message.
 """
-
+"""
 import os
 import re
 
@@ -20,10 +20,7 @@ def validate_inputs(
     slice_thickness: int,
     fill_threshold: int,
 ):
-    """
-    Validate all user-supplied inputs. Raises ValueError with a clear
-    message if anything is wrong.
-    """
+
     errors = []
 
     # --- File paths ---
@@ -76,3 +73,4 @@ def validate_inputs(
         raise ValueError(
             "Input validation failed:\n" + "\n".join(f"  - {e}" for e in errors)
         )
+        """

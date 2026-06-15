@@ -23,29 +23,7 @@ def write_dicom_series(
     min_y: float,
     min_z: float,
 ):
-    """
-    Write a full series of DICOM slices to disk.
 
-    Parameters
-    ----------
-    slices : list of np.ndarray (int16)
-        One 2D array per slice, in order from bottom (min_z) to top.
-    output_dir : str
-        Directory where .dcm files will be written.
-    patient_id : str
-        Patient identifier, used in filenames and DICOM tags.
-    patient_name : str
-        Patient name for DICOM tags.
-    series_description : str
-        Series description for DICOM tags.
-    pixel_size : float
-        In-plane pixel size in mm (same for x and y).
-    slice_thickness : float
-        Distance between slices in mm.
-    min_x, min_y, min_z : float
-        Physical coordinates of the lower-left-bottom corner of the volume,
-        used to populate ImagePositionPatient for each slice.
-    """
     # Generate UIDs shared across the entire series
     sop_uid_stem = pydicom.uid.generate_uid()[:-4]
     series_instance_uid = pydicom.uid.generate_uid(prefix='1.3.6.1.4.1.9590.100.1.4.')
