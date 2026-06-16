@@ -20,11 +20,23 @@ jobs:
         run: |
           pip install -r requirements.txt
           pip install pyinstaller pyinstaller-hooks-contrib
+          pip install wxPython
+      - name: Force wxPython import check
+        run: |
+          python -c "import wx; import gooey; print('wx + gooey OK')" 
 
       - name: Build Windows executable
         run: |
-          python -m PyInstaller --onefile --windowed --hidden-import=six --collect-all gooey --name Edico EDICO/main.py
-
+          python -m PyInstaller EDICO/main.py ^
+          --onefile ^
+          --windowed ^
+          --noconfirm ^
+          --name Edico ^
+          --hidden-import=six ^
+          --hidden-import=wx ^
+          --hidden-import=gooey ^
+          --collect-all gooey ^
+          --collect-all wxPython
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
         with:
@@ -45,11 +57,23 @@ jobs:
         run: |
           pip install -r requirements.txt
           pip install pyinstaller pyinstaller-hooks-contrib
+          pip install wxPython
+      - name: Force wxPython import check
+        run: |
+          python -c "import wx; import gooey; print('wx + gooey OK')" 
 
       - name: Build Mac app bundle
         run: |
-          python3 -m PyInstaller --windowed --hidden-import=six --collect-all gooey --name "Edico" --osx-bundle-identifier com.edico.app EDICO/main.py
-
+          python3 -m PyInstaller --windowed ^
+            --noconfirm ^
+            --name "Edico" ^
+            --hidden-import=six ^
+            --hidden-import=wx ^
+            --hidden-import=gooey ^
+            --collect-all gooey ^
+            --collect-all wxPython ^
+            --osx-bundle-identifier com.edico.app ^
+            EDICO/main.py
       - name: Sign the app (ad-hoc)
         run: |
           codesign --force --deep --sign - dist/Edico.app
