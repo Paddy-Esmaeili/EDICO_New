@@ -14,7 +14,12 @@ All actual logic lives in the edico/ submodules.
 import os
 import sys
 
-from gooey import Gooey, GooeyParser
+try:
+    from gooey import Gooey, GooeyParser
+except:
+    from argparse import ArgumentParser as GooeyParser
+    def Gooey(func):
+        return func
 
 from edico.io.mesh_reader import parse_mesh
 from edico.io.car_reader import parse_car
@@ -26,7 +31,7 @@ from edico.processing.rasterizer import rasterize_slice
 from edico.utils import prepare_directory
 
 
-@Gooey()
+@Gooey
 def main():
     program_desc = (
         "Edico is an Electroanatomic map DIcom COnverter meant for compatibility with\n"
@@ -35,11 +40,10 @@ def main():
     parser = GooeyParser(description=program_desc)
 
     general = parser.add_argument_group('General')
-    general.add_argument("mesh",    metavar='Mesh file',      help="Select your .mesh file",  widget="FileChooser")
-    general.add_argument("car",     metavar='CAR file',       help="Select your _car file",    widget="FileChooser")
+    general.add_argument("mesh",    metavar='Mesh file',      help="Select your .mesh file")
+    general.add_argument("car",     metavar='CAR file',       help="Select your _car file")
     general.add_argument("results", metavar='Results folder',
-                         help="Output directory. Warning: existing /result/ subfolder will be overwritten.",
-                         widget="DirChooser")
+                     help="Output directory. Warning: existing /result/ subfolder will be overwritten.")
 
     patient = parser.add_argument_group('Patient')
     patient.add_argument('-i', '--patientID',

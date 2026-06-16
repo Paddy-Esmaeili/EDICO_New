@@ -19,14 +19,14 @@ from scipy.spatial import cKDTree
 # ─────────────────────────────────────────────
 # Configuration
 # ─────────────────────────────────────────────
-INPUT_FILE  = "1-VG(1).mesh"
-CAR_FILE    = "1-VG_car.txt"  
-OUTPUT_FILE = "patient1_MeshLab.ply"
+INPUT_FILE  = "PMMA_saline.mesh"
+CAR_FILE    = "PMMA_saline_car.txt"  
+OUTPUT_FILE = "PMMA_saline.ply"
 ""
 # Distance threshold: mesh vertices further than this from any
 # catheter contact point are considered unmapped → colored gray.
 
-UNMAPPED_THRESHOLD_MM = 45.0
+UNMAPPED_THRESHOLD_MM = 0.0
 
 # CARTO3 bipolar voltage color scale (mV → RGB)
 CARTO3_SCALE = [

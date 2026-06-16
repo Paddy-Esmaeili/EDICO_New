@@ -12,7 +12,7 @@ def parse_mesh(filepath: str):
     Parse a .mesh file.
 
     """
-    with open(filepath, 'r') as fid:
+    with open(filepath, 'r', encoding='latin-1') as fid:
         # Read and preserve the 8-line header for future reference.
         # OPEN QUESTION: the header may contain the coordinate system
         # declaration. If so, the rotation in coordinates.py may need
