@@ -26,7 +26,7 @@ OUTPUT_FILE = "PMMA_saline.ply"
 # Distance threshold: mesh vertices further than this from any
 # catheter contact point are considered unmapped → colored gray.
 
-UNMAPPED_THRESHOLD_MM = 0.0
+UNMAPPED_THRESHOLD_MM = 8.0
 
 # CARTO3 bipolar voltage color scale (mV → RGB)
 CARTO3_SCALE = [
@@ -308,6 +308,8 @@ def main():
         if unmapped_mask[i]:
             colors[i] = GRAY
         elif valid[i]:
+            if i < 20:
+                print(i, voltages[i], carto3_color(voltages[i]))
             colors[i] = carto3_color(voltages[i])
         else:
             colors[i] = GRAY  # no voltage data in mesh either
@@ -355,7 +357,7 @@ def main():
     print("  Render → Smooth / Flat shading (to control surface look)")
     v_valid = voltages[valid]
 
-    print(f">1.5 mV : {(v_valid >= 1.5).mean()*100:.1f}%")
+    print(f">20.0 mV : {(v_valid >= 20.0).mean()*100:.1f}%")
     print(f">2.0 mV : {(v_valid >= 2.0).mean()*100:.1f}%")
     print(f">2.5 mV : {(v_valid >= 2.5).mean()*100:.1f}%")
     print("invalid count =", (~valid).sum())
