@@ -1,32 +1,20 @@
-"""
-CARTO3 .mesh parser — surfaces + bipolar voltage coloring
-Outputs a proper triangle mesh PLY with per-vertex colors.
-
-Usage:
-    python parse_mesh.py input.mesh output.ply [input.car]
-
-Dependencies:
-    pip install numpy open3d scipy
-
-"""
-
 import sys
 from matplotlib import colors
 import numpy as np
 import open3d as o3d
 from scipy.spatial import cKDTree
 
-# ─────────────────────────────────────────────
+# ############################
 # Configuration
-# ─────────────────────────────────────────────
-INPUT_FILE  = "PMMA_saline.mesh"
-CAR_FILE    = "PMMA_saline_car.txt"  
-OUTPUT_FILE = "PMMA_saline.ply"
+# ############################
+INPUT_FILE  = "PatientData.mesh"
+CAR_FILE    = "PatientData_car.txt"  
+OUTPUT_FILE = "PatientData.ply"
 ""
 # Distance threshold: mesh vertices further than this from any
-# catheter contact point are considered unmapped → colored gray.
+# catheter contact point are considered unmapped.
 
-UNMAPPED_THRESHOLD_MM = 8.0
+UNMAPPED_THRESHOLD_MM = 18
 
 # CARTO3 bipolar voltage color scale (mV → RGB)
 CARTO3_SCALE = [
@@ -36,7 +24,7 @@ CARTO3_SCALE = [
     (1.10, (0.00, 1.00, 0.00)),  # Green
     (1.30, (0.00, 1.00, 1.00)),  # Cyan
     (1.40, (0.00, 0.00, 1.00)),  # Blue
-    (1.50, (1.00, 0.00, 1.00)),  # Purple/Magenta
+    (1.50, (1.00, 0.00, 1.00)),  # Purple
 ]
 SCAR_THRESHOLD  = 0.50   # mV — below this = scar 
 HEALTHY_VOLTAGE = 1.50   # mV — at or above = healthy 
@@ -48,14 +36,13 @@ COLOR_COLUMN = 1   # Bipolar
 INVALID_VALUE = -10000.0  
 
 
-# ─────────────────────────────────────────────
+# ############################
 # Helpers
-# ─────────────────────────────────────────────
+# ############################
 GRAY = np.array([0.6, 0.6, 0.6])  # unmapped only
 
 def carto3_color(mv: float) -> np.ndarray:
-    # Scar threshold: red, NOT gray
-    # Gray is reserved for unmapped (handled outside this function)
+
     if mv <= 0.50:
         return np.array([1.0, 0.0, 0.0])  # red = scar/low voltage
     if mv >= 1.50:
@@ -69,9 +56,9 @@ def carto3_color(mv: float) -> np.ndarray:
     return np.array(CARTO3_SCALE[-1][1])
 
 
-# ─────────────────────────────────────────────
+# ############################
 # CAR file parser
-# ─────────────────────────────────────────────
+# ############################
 def parse_car(path: str):
     """
     Parse a CARTO3 .car file and return a list of catheter contact points.
@@ -106,15 +93,7 @@ def parse_car(path: str):
 def compute_unmapped_mask(mesh_vertices: np.ndarray,
                           car_points: list,
                           threshold_mm: float = 10.0):
-    """
-    For every mesh vertex compute distance to the nearest catheter contact
-    point.  Vertices farther than threshold_mm are flagged as unmapped.
 
-    Returns
-    -------
-    unmapped_mask : bool array, shape (N,)   True = unmapped
-    distances     : float array, shape (N,)  distance to nearest contact
-    """
     print("CAR points loaded:", len(car_points))
 
     car_xyz = np.array([p["xyz"] for p in car_points])
@@ -136,9 +115,9 @@ def compute_unmapped_mask(mesh_vertices: np.ndarray,
     return unmapped_mask, distances
 
 
-# ─────────────────────────────────────────────
+# ############################
 # Parser
-# ─────────────────────────────────────────────
+# ############################
 def parse_mesh(path: str):
     points    = []   # [x, y, z]
     normals   = []   # [nx, ny, nz]
@@ -152,11 +131,15 @@ def parse_mesh(path: str):
         for raw in f:
             line = raw.strip()
 
-            # ── Skip comments and empty lines ──────────────────
+            # ############################
+            # Skip comments and empty lines
+            # ############################
             if not line or line.startswith(";"):
                 continue
 
-            # ── Section headers ────────────────────────────────
+            # ############################
+            # Section headers
+            # ############################
             if line.startswith("["):
                 if   "[VerticesSection]"       in line: section = "vertices"
                 elif "[TrianglesSection]"      in line: section = "triangles"
@@ -245,7 +228,9 @@ def main():
         print("ERROR: no vertices parsed — check section headers in file.")
         sys.exit(1)
 
-    # ── Bounding box ───────────────────────────────────────────
+    # ############################
+    # Bounding box
+    # ############################
     lo, hi = points.min(axis=0), points.max(axis=0)
     dims   = hi - lo
     print(f"\n[2/4] Bounding box")
@@ -254,7 +239,9 @@ def main():
     print(f"      Z: {lo[2]:.1f} → {hi[2]:.1f}  ({dims[2]:.1f} mm)")
     print(f"      Centroid: {points.mean(axis=0).round(1)}")
 
-    # ── Voltage stats (valid only) ─────────────────────────────
+    # ############################
+    # Voltage stats (valid only)
+    # ############################
     if valid.any():
         v_valid = voltages[valid]
         print(f"\n      Bipolar voltage (valid points)")
@@ -264,7 +251,9 @@ def main():
         pct_scar = (v_valid < SCAR_THRESHOLD).mean() * 100
         print(f"      Scar (<{SCAR_THRESHOLD} mV): {pct_scar:.1f}%")
 
-    # ── CAR-based unmapped mask ────────────────────────────────
+    # ############################
+    # CAR-based unmapped mask
+    # ############################
     unmapped_mask = np.zeros(n_pts, dtype=bool)   # default: all mapped
 
     if car_file:
