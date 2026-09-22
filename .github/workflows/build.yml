@@ -64,15 +64,15 @@ jobs:
 
       - name: Build Mac app bundle
         run: |
-          python3 -m PyInstaller --windowed `
-            --noconfirm `
-            --name "Edico" `
-            --hidden-import=six `
-            --hidden-import=wx `
-            --hidden-import=gooey `
-            --collect-all gooey `
-            --collect-all wxPython `
-            --osx-bundle-identifier com.edico.app `
+          python3 -m PyInstaller --windowed \
+            --noconfirm \
+            --name "Edico" \
+            --hidden-import=six \
+            --hidden-import=wx \
+            --hidden-import=gooey \
+            --collect-all gooey \
+            --collect-all wxPython \
+            --osx-bundle-identifier com.edico.app \
             EDICO/main.py
       - name: Sign the app (ad-hoc)
         run: |
