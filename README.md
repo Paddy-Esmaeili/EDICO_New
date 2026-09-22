@@ -6,7 +6,7 @@
 
 1. Go to the **[Actions](../../actions)** tab at the top of this repo.
 2. Click **Build Executables** in the left sidebar.
-3. Click the most recent (top) workflow run — make sure it has a green checkmark ✅.
+3. Click the most recent (top) workflow run. Make sure it has a green checkmark.
 4. Scroll down to the **Artifacts** section at the bottom of the run page.
 5. Download the one for your system:
    - **Edico-Windows** → unzip, then run `Edico.exe`
